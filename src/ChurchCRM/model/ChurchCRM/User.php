@@ -99,29 +99,39 @@ class User extends BaseUser
         return hash('sha256', $password . $this->getPersonId());
     }
 
+    public function isAddEventEnabled() // TODO: Create permission to manag event deletion see https://github.com/ChurchCRM/CRM/issues/4726
+    {
+        return $this->isAddEvent();
+    }
+
     public function isAddEvent()
     {
-        return $this->isEnabledSecurity('bAddEvent');
+        return $this->isAdmin() || $this->isEnabledSecurity('bAddEvent');
+    }
+
+    public function isCSVExportEnabled()
+    {
+        return $this->isCSVExport();
     }
 
     public function isCSVExport()
     {
-        return $this->isEnabledSecurity('bExportCSV');
+        return $this->isAdmin() || $this->isEnabledSecurity('bExportCSV');
     }
 
     public function isEmailEnabled()
     {
-        return $this->isEnabledSecurity('bEmailMailto');
+        return $this->isAdmin() || $this->isEnabledSecurity('bEmailMailto');
     }
 
     public function isCreateDirectoryEnabled()
     {
-        return $this->isEnabledSecurity('bCreateDirectory');
+        return $this->isAdmin() || $this->isEnabledSecurity('bCreateDirectory');
     }
 
     public function isbUSAddressVerificationEnabled()
     {
-        return $this->isEnabledSecurity('bUSAddressVerification');
+        return $this->isAdmin() || $this->isEnabledSecurity('bUSAddressVerification');
     }
 
 
@@ -210,5 +220,13 @@ class User extends BaseUser
             }
         }
         return false;
+    }
+
+    public function getUserConfigString($userConfigName) {
+      foreach ($this->getUserConfigs() as $userConfig) {
+        if ($userConfig->getName() == $userConfigName) {
+          return $userConfig->getValue();
+        }
+      }
     }
 }
